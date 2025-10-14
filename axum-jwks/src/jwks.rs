@@ -195,6 +195,21 @@ impl Jwks {
 
         Ok(decoded_token)
     }
+
+    /// Extend this JWKS with the keys from another JWKS (consuming the other)
+    /// If a key is present in both sets, the value from the new set will override the original value.
+    pub fn extend(&mut self, mut other: Self) {
+        self.keys.extend(other.keys.drain());
+    }
+
+    /// Merge two JWKS
+    /// If a key is present in both sets, the latter value will be present in the result.
+    /// This method clones both sets of keys, without modifying either JWKS
+    pub fn merge(&self, other: &Self) -> Self {
+        let mut keys = self.keys.clone();
+        keys.extend(other.keys.clone());
+        Self { keys }
+    }
 }
 
 #[derive(Clone)]
